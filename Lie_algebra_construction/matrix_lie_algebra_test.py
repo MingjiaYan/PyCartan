@@ -527,3 +527,83 @@ coeffs_history = test_time_evolution(xi, t_points)
 flow_fig = visualise_flow_snapshots(coeffs_history, t_points)
 
 plt.show()
+
+
+
+
+def visualise_se2_flow2():
+    # SE(2) element coefficients - same as in React version
+    xi_matrix = np.array([
+        [ 0.0, -0.4858853, 0.33703326],
+        [ 0.4858853, 0.0, 0.68241567],
+        [ 0.0, 0.0, 0.0]
+    ])
+    
+    def compute_velocity(x, y):
+        """
+        Compute velocity at point (x,y)
+        For ξ = a₁X + a₂Y + a₃R,
+        velocity at (x,y) is (a₁ - a₃y, a₂ + a₃x)
+        """
+        a1 = xi_matrix[0, 2]  # translation in x
+        a2 = xi_matrix[1, 2]  # translation in y
+        a3 = xi_matrix[1, 0]  # rotation coefficient
+        
+        return a1 - a3 * y, a2 + a3 * x
+    
+    # Create grid of points
+    spacing = 0.5  # Equivalent to 50/100 in React version
+    x = np.arange(-2, 2.1, spacing)  # -2 to 2 with spacing 0.5
+    y = np.arange(-2, 2.1, spacing)
+    X, Y = np.meshgrid(x, y)
+    
+    # Compute velocities
+    U = np.zeros_like(X)
+    V = np.zeros_like(Y)
+    
+    for i in range(len(x)):
+        for j in range(len(y)):
+            U[j,i], V[j,i] = compute_velocity(X[j,i], Y[j,i])
+    
+    # Create figure
+    plt.figure(figsize=(6, 6))
+    
+    # Plot coordinate axes
+    plt.axhline(y=0, color='#cccccc', linestyle='-', linewidth=1)
+    plt.axvline(x=0, color='#cccccc', linestyle='-', linewidth=1)
+    
+    # Plot grid points and velocity vectors
+    plt.quiver(X, Y, U, V, 
+               color='#2563eb',
+               width=0.003,      # Increased width
+               scale=3,         # Decreased scale to make arrows longer
+               scale_units='xy', # Use the same units for x and y
+               angles='xy',      # Preserve arrow angles     # Wider arrow heads
+               headlength=5)     # Longer arrow heads
+    
+    # Plot grid points
+    plt.plot(X, Y, 'o', 
+            color='#666666',  # Same gray color as React version
+            markersize=2)
+    
+    # Set equal aspect ratio and limits
+    plt.axis('equal')
+    plt.xlim(-2.5, 2.5)
+    plt.ylim(-2.5, 2.5)
+    
+    # Add title and labels
+    plt.title('SE(2) Flow Visualisation', pad=20)
+    plt.xlabel('x')
+    plt.ylabel('y')
+    
+    # Add text description
+    plt.figtext(0.5, 0.02, 
+                'The arrows show the instantaneous velocity field induced by the Lie algebra element.\n' +
+                'Blue arrows indicate the direction and magnitude of motion at each point.',
+                ha='center', fontsize=10)
+    
+    plt.tight_layout()
+    plt.show()
+
+# Run the visualisation
+visualise_se2_flow2()

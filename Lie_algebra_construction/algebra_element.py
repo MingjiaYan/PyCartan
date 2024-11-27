@@ -97,14 +97,6 @@ class LieAlgebraElement:
         else:
             raise ValueError(f"Time {t} is outside the stored time range.")
     
-    def time_derivative(self) -> np.ndarray:
-        """
-        Compute time derivative of coefficients using finite differencing.
-        This would be used in time evolution schemes.
-        """
-        # This is a placeholder for actual finite differencing implementation
-        # You would need past values of coefficients to compute this properly
-        pass
 
 
 # Example:
